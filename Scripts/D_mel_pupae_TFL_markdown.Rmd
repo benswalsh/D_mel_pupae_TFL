@@ -11,6 +11,7 @@ output:
     highlights: zenburn
 ---
 
+
 ```{r setup, include=FALSE}
 #### Loading packages and data in ####
 rm(list = ls()) #clear R
@@ -21,9 +22,10 @@ library('Cairo')
 library(dplyr)
 library(binom)
 library(tidyr)
+library(here)
 
 #Load data
-setwd("U:\\ManWin\\My Documents")
+setwd("M:\\Documents\\D_mel_pupae_TFL\\Data")
 pupaeTFL<-read.csv("D.mel_pupae_TFL_DATA.csv", header=TRUE)
 
 #### Rename vectors and convert from numeric to factors #####
@@ -317,14 +319,3 @@ _Species we currently have in the lab_
 |D. simulans (Madeira)|D. pseudoobascura|D. novamexicana|D. hydei|
 |D. suzukii|D. bifasciatus|D. flavomontana|D. mercatorum|
 |D. ananassae|D. maderensis|||
-
-
-```{r}
-usethis::use_git()
-
-usethis::use_git_config(
-  user.name= "benswalsh",
-  user.email= "bswalsh@liverpool.ac.uk"
-)
-```
-
