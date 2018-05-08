@@ -13,11 +13,10 @@ output:
 
 
 ```{r setup, include=FALSE}
-
 #### Loading packages and data in ####
 rm(list = ls()) #clear R
 
-#Load packages and data ####
+# Load packages and data ####
 library(ggplot2)
 library('Cairo')
 library(dplyr)
