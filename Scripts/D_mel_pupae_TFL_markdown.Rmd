@@ -302,6 +302,7 @@ submatefemale<- subset(submate, sex==0)
 submatemale<- subset(submate, sex==1)
 submotility_3<- subset(beh.mot,motility_3==1 |motility_3==0)
 submotility_8<- subset(beh.mot,motility_8==1 |motility_8==0)
+submotility_14<-subset(beh.mot,motility_14==1|motility_14==0)
 
 #### Calculate proportions####
 
@@ -379,6 +380,9 @@ prop_motile_3 <-cbind((binom.confint(prop_motile_3$`mean(motility_3)`*prop_motil
 prop_motile_8 <- summarise(group_by(submotility_8, temp), mean(motility_8), N=length(motility_8))
 prop_motile_8 <-cbind((binom.confint(prop_motile_8$`mean(motility_8)`*prop_motile_8$N, prop_motile_8$N, conf.level = 0.95, methods = "logit")),prop_motile_8)
 
+prop_motile_14 <- summarise(group_by(submotility_14, temp), mean(motility_14), N=length(motility_14))
+prop_motile_14 <-cbind((binom.confint(prop_motile_14$`mean(motility_14)`*prop_motile_14$N, prop_motile_14$N, conf.level = 0.95, methods = "logit")),prop_motile_14)
+
 #Plot motility_3 with error
 pd<-position_dodge(1)
 
@@ -420,9 +424,11 @@ motility_8_error
 
 
 colnames(prop_motile_8)[8] <- "mean(motility_3)"
-prop_motile_all <- rbind(prop_motile_3,prop_motile_8)
-prop_motile_all ["days"]<- c(3,3,8,8)
+colnames(prop_motile_14)[8] <- "mean(motility_3)"
+prop_motile_all <- rbind(prop_motile_3,prop_motile_8,prop_motile_14)
+prop_motile_all ["days"]<- c(3,3,8,8,14,14)
 prop_motile_all$days<-as.factor(prop_motile_all$days)
+
 
 
 pd1 <- position_dodge(0.25)
@@ -444,6 +450,12 @@ motility_all_error <- ggplot(prop_motile_all, aes(x=days, y=`mean(motility_3)`, 
 
 motility_all_error
 
+
+
+ggplot(submatefemale, aes(x=temp, y=latency_s))+
+  stat_summary(fun.ymin = function(y) mean(y) - sd(y), 
+           fun.ymax = function(y) mean(y) + sd(y), position ='dodge', 
+           geom = 'errorbar')
 
 
 
