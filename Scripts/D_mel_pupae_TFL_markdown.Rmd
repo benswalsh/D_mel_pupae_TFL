@@ -1,7 +1,7 @@
 ---
 title: "Drosophila melanogaster pupae TFL: summary of progress and future plans"
 author: "Benjamin Walsh"
-date: "23 April 2018"
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   html_document:
     fig_caption: yes
@@ -109,7 +109,7 @@ emerged_error<- ggplot(prop_emerged, aes(x=temp, y=`mean(emerged)`, ymin=lower, 
   geom_point(position=pd, size=0.5, colour="black") +
   geom_line(position=pd, size=0.5, colour="black")+
   geom_errorbar(colour="black", position=pd, size=0.5, width=.2)+
-  scale_x_continuous('Pupal heat shock temperature', breaks= round(seq(min(28), max(35), by = 1),1)) +
+  scale_x_continuous('Pupal heat shock temperature (°C)', breaks= round(seq(min(28), max(35), by = 1),1)) +
   scale_y_continuous('Proportion of emerging individuals')+
   coord_cartesian(ylim=c(0, 1)) +
   theme(panel.background = element_rect(fill = "white",colour = "gray90"),
@@ -125,52 +125,32 @@ emerged_error
 
 #### 2. Male fertility vs emergence error ####
 
-TFLvsCTL<- ggplot() +
-  geom_point(data = prop_emerged, aes(temp, `mean(emerged)`, colour="chartreuse4"))+ 
-  geom_point(data = prop_M_larval,aes(temp, `mean(M_larval)`, colour= "red")) + 
-  geom_line(data = prop_emerged,  size = 1, aes(temp, `mean(emerged)`, colour="chartreuse4")) + 
-  geom_line(data = prop_M_larval, size=1,  aes(temp, `mean(M_larval)`, colour="red")) + 
-  xlab("Pupal heat-shock temperature") + 
-  ylab ("Proportion") + 
-  scale_x_continuous(breaks = round(seq(min(28), max(35), by = 1),1)) +
-  #labs(colour='') +
-  scale_color_manual("", values = c("red", "chartreuse4"), labels = c("Pupal emergence", "Surviving male fertility")) + 
-  coord_cartesian(ylim=c(0, 1)) +
-  theme(axis.title.x = element_text(size = 12, vjust=-.2), 
-        axis.title.y = element_text(size = 12, vjust=0.3), 
-        panel.background = element_rect(fill="white", colour="gray90") , 
-        panel.grid.major = element_line("gray90"),
-        legend.position = "top")
-
-
-TFLvsCTL
-
 prop_M_larval<-cbind((binom.confint(prop_M_larval$`mean(M_larval)`*prop_M_larval$N, prop_M_larval$N, conf.level = 0.95, methods = "logit")),prop_M_larval)
 
 colnames(prop_M_larval)[8] <- "mean(emerged)"
-prop_emerged_all <- rbind(prop_emerged,prop_M_larval)
-prop_emerged_all [,"emerg_or_TFL"]<- c(0,0,0,0,0,1,1,1,1)
-prop_emerged_all$emerg_or_TFL<-as.factor(prop_emerged_all$emerg_or_TFL)
+prop_emerged_male <- rbind(prop_emerged,prop_M_larval)
+prop_emerged_male [,"emerg_or_TFL"]<- c(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1)
+prop_emerged_male$emerg_or_TFL<-as.factor(prop_emerged_male$emerg_or_TFL)
 
 
 pd0 <- position_dodge(0)
-TFL_emergence_error <- ggplot(prop_emerged_all, aes(x=temp, y=`mean(emerged)`, group=emerg_or_TFL, ymin=lower, ymax=upper)) +
-                       geom_point(position=pd0, size=1.5, aes(colour=factor(emerg_or_TFL))) +
-                       geom_errorbar(position=pd0, size=0.5, width=.15, aes(colour=factor(emerg_or_TFL)))+
-                       geom_line(position=pd0, aes(colour=factor(emerg_or_TFL)))+
-                       scale_x_continuous('Pupal heat-shock temperature',breaks = round(seq(min(28), max(35), by = 1),1)) +
-                       scale_y_continuous('Proportion')+
-                       coord_cartesian(ylim=c(0, 1)) +
-                       scale_color_discrete("",labels=c("Emergence", "Fertility"))+
-                       theme(panel.background = element_rect(fill = "white",colour = "gray90"),
-                             axis.line=element_line(colour='gray90'),
-                             axis.text=element_text(colour='black'),
-                             panel.grid.major = element_line("gray90"),
-                             axis.title.y = element_text(vjust=1.5),
-                             plot.title = element_text(face="bold"),
-                             plot.background = element_rect(fill = "transparent",colour = NA))
+TFL_M_emergence_error <- ggplot(prop_emerged_male, aes(x=temp, y=`mean(emerged)`, group=emerg_or_TFL, ymin=lower, ymax=upper)) +
+                         geom_point(position=pd0, size=1.5, aes(colour=factor(emerg_or_TFL))) +
+                         geom_errorbar(position=pd0, size=0.5, width=.15, aes(colour=factor(emerg_or_TFL)))+
+                         geom_line(position=pd0, aes(colour=factor(emerg_or_TFL)))+
+                         scale_x_continuous('Pupal heat-shock temperature (°C)',breaks = round(seq(min(28), max(35), by = 1),1)) +
+                         scale_y_continuous('Proportion')+
+                         coord_cartesian(ylim=c(0, 1)) +
+                         scale_color_discrete("",labels=c("Emergence", "Male fertility"))+
+                         theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                               axis.line=element_line(colour='gray90'),
+                               axis.text=element_text(colour='black'),
+                               panel.grid.major = element_line("gray90"),
+                               axis.title.y = element_text(vjust=1.5),
+                               plot.title = element_text(face="bold"),
+                               plot.background = element_rect(fill = "transparent",colour = NA))
 
-TFL_emergence_error
+TFL_M_emergence_error
 
 
 #### 3. Male fertility with error bars ####
@@ -181,11 +161,11 @@ TFL_emergence_error
 #Set position dodge
 pd<-position_dodge(1)
 
-TFL_error<- ggplot(prop_M_larval, aes(x=temp, y=`mean(emerged)`, ymin=lower, ymax=upper)) + 
+TFL_M_error<- ggplot(prop_M_larval, aes(x=temp, y=`mean(emerged)`, ymin=lower, ymax=upper)) + 
   geom_point(position=pd, size=0.5, colour="black") +
   geom_line(position=pd, size=0.5, colour="black")+
   geom_errorbar(colour="black", position=pd, size=0.5, width=.2)+
-  scale_x_continuous('Pupal heat shock temperature', breaks= round(seq(min(28), max(35), by = 1),1)) +
+  scale_x_continuous('Pupal heat shock temperature (°C)', breaks= round(seq(min(28), max(35), by = 1),1)) +
   scale_y_continuous('Proportion of surviving males fertile')+
   coord_cartesian(ylim=c(0, 1)) +
   theme(panel.background = element_rect(fill = "white",colour = "gray90"),
@@ -197,48 +177,78 @@ TFL_error<- ggplot(prop_M_larval, aes(x=temp, y=`mean(emerged)`, ymin=lower, yma
         plot.background = element_rect(fill = "transparent",colour = NA),
         legend.position='none')
 
-TFL_error
+TFL_M_error
+
+#### 4. Female fertility vs emergence error ####
+
+prop_F_larval1<-cbind((binom.confint(prop_F_larval1$`mean(F_larval1)`*prop_F_larval1$N, prop_F_larval1$N, conf.level = 0.95, methods = "logit")),prop_F_larval1)
+
+colnames(prop_F_larval1)[8] <- "mean(emerged)"
+prop_emerged_female <- rbind(prop_emerged,prop_F_larval1)
+prop_emerged_female [,"emerg_or_TFL"]<- c(0,0,0,0,0,0,0,0,1,1,1,1)
+prop_emerged_female$emerg_or_TFL<-as.factor(prop_emerged_female$emerg_or_TFL)
 
 
-#### 4. Female fertility (larval_1 only) vs emergence ####
+pd0 <- position_dodge(0)
+TFL_F_emergence_error <- ggplot(prop_emerged_female, aes(x=temp, y=`mean(emerged)`, group=emerg_or_TFL, ymin=lower, ymax=upper)) +
+                         geom_point(position=pd0, size=1.5, aes(colour=factor(emerg_or_TFL))) +
+                        # geom_errorbar(position=pd0, size=0.5, width=.15, aes(colour=factor(emerg_or_TFL)))+ #add in for error bars
+                         geom_line(position=pd0, aes(colour=factor(emerg_or_TFL)))+
+                         scale_x_continuous('Pupal heat-shock temperature (°C)',breaks = round(seq(min(28), max(35), by = 1),1)) +
+                         scale_y_continuous('Proportion')+
+                         coord_cartesian(ylim=c(0, 1)) +
+                         scale_color_discrete("",labels=c("Emergence", "Female fertility"))+
+                         theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                               axis.line=element_line(colour='gray90'),
+                               axis.text=element_text(colour='black'),
+                               panel.grid.major = element_line("gray90"),
+                               axis.title.y = element_text(vjust=1.5),
+                               plot.title = element_text(face="bold"),
+                               plot.background = element_rect(fill = "transparent",colour = NA))
+
+TFL_F_emergence_error
 
 
 
-TFLvsCTL_female<- ggplot() +
-  geom_point(data = prop_emerged, aes(temp, `mean(emerged)`, colour="chartreuse4"))+ 
-  geom_point(data = prop_F_larval1,aes(temp, `mean(F_larval1)`, colour= "red")) + 
-  geom_line(data = prop_emerged,  size = 1, aes(temp, `mean(emerged)`, colour="chartreuse4")) + 
-  geom_line(data = prop_F_larval1, size=1,  aes(temp, `mean(F_larval1)`, colour="red")) + 
-  xlab("Pupal heat-shock temperature") + 
-  ylab ("Proportion") + 
-  scale_x_continuous(breaks = round(seq(min(28), max(35), by = 1),1)) +
-  #labs(colour='') +
-  scale_color_manual("", values = c("red", "chartreuse4"), labels = c("Pupal emergence", "Surviving female fertility")) + 
+#### 5. Female fertility with error bars ####
+
+pd<-position_dodge(1)
+
+TFL_F_error<- ggplot(prop_F_larval1, aes(x=temp, y=`mean(emerged)`, ymin=lower, ymax=upper)) + 
+  geom_point(position=pd, size=0.5, colour="black") +
+  geom_line(position=pd, size=0.5, colour="black")+
+  geom_errorbar(colour="black", position=pd, size=0.5, width=.2)+
+  scale_x_continuous('Pupal heat shock temperature (°C)', breaks= round(seq(min(28), max(35), by = 1),1)) +
+  scale_y_continuous('Proportion of surviving females fertile')+
   coord_cartesian(ylim=c(0, 1)) +
-  theme(axis.title.x = element_text(size = 12, vjust=-.2), 
-        axis.title.y = element_text(size = 12, vjust=0.3), 
-        panel.background = element_rect(fill="white", colour="gray90") , 
+  theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+        axis.line=element_line(colour='gray90'),
+        axis.text=element_text(colour='black'),
         panel.grid.major = element_line("gray90"),
-        legend.position = "top")
+        axis.title.y = element_text(vjust=1.5),
+        plot.title = element_text(face="bold"),
+        plot.background = element_rect(fill = "transparent",colour = NA),
+        legend.position='none')
 
-TFLvsCTL_female
+TFL_F_error
 
-##With error bars
+
+#### 6. Male and female fertility vs emergence ####
 
 prop_F_larval1<-cbind((binom.confint(prop_F_larval1$`mean(F_larval1)`*prop_F_larval1$N, prop_F_larval1$N, conf.level = 0.95, methods = "logit")),prop_F_larval1)
 
 colnames(prop_F_larval1)[8] <- "mean(emerged)"
 prop_emerged_all_male_female <- rbind(prop_emerged, prop_M_larval, prop_F_larval1)
-prop_emerged_all_male_female [,"emerg_male_female"]<- c(0,0,0,0,0,1,1,1,1,2,2,2,2)
+prop_emerged_all_male_female [,"emerg_male_female"]<- c(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2)
 prop_emerged_all_male_female$emerg_male_female<-as.factor(prop_emerged_all_male_female$emerg_male_female)
 
 
 pd3 <- position_dodge(0)
 TFL_emergence_m_f <- ggplot(prop_emerged_all_male_female, aes(x=temp, y=`mean(emerged)`, group=emerg_male_female, ymin=lower, ymax=upper)) +
                        geom_point(position=pd3, size=1.5, aes(colour=factor(emerg_male_female))) +
-                       #geom_errorbar(position=pd3, size=0.5, width=.15, aes(colour=factor(emerg_male_female)))+
+                       #geom_errorbar(position=pd3, size=0.5, width=.15, aes(colour=factor(emerg_male_female)))+ #use this for error bars
                        geom_line(position=pd3, aes(colour=factor(emerg_male_female)))+
-                       scale_x_continuous('Pupal heat-shock temperature',breaks = round(seq(min(28), max(35), by = 1),1)) +
+                       scale_x_continuous('Pupal heat-shock temperature (°C)',breaks = round(seq(min(28), max(35), by = 1),1)) +
                        scale_y_continuous('Proportion')+
                        coord_cartesian(ylim=c(0, 1)) +
                        scale_color_discrete("",labels=c("Emergence", "Male fertility", "Female fertility"))+
@@ -252,9 +262,13 @@ TFL_emergence_m_f <- ggplot(prop_emerged_all_male_female, aes(x=temp, y=`mean(em
 
 TFL_emergence_m_f
 
+#Saving high res plot
+png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_male_female_fertility.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+print(TFL_emergence_m_f)
+dev.off() 
 
 
-#### 5. Female survival throughout TFL experiment ####
+#### 7. Female survival throughout TFL experiment ####
 
 #Create subset with femlaes that have the full data
 subF_survival<-subset(pupaeTFL, F_female_survived_laying3==1 |F_female_survived_laying3==0)
@@ -276,7 +290,7 @@ F_survival<- ggplot(prop_F_survival, aes(x=Days, y=`mean(Survival)`, group=temp)
   coord_cartesian(ylim=c(0, 1), xlim=c(0,13)) +
   scale_x_continuous('Days after emergence', breaks= round(seq(min(0), max(13), by = 1),1)) +
   scale_y_continuous('Proportion of females alive', breaks=round(seq(min(0), max(1), by =0.1),1)) +
-  labs(colour = "Temperature") +
+  labs(colour = "Temperature (°C)") +
   theme(panel.background = element_rect(fill = "white",colour = "gray90"),
         axis.line=element_line(colour='gray90'),
         axis.text=element_text(colour='black'),
@@ -286,6 +300,108 @@ F_survival<- ggplot(prop_F_survival, aes(x=Days, y=`mean(Survival)`, group=temp)
         plot.background = element_rect(fill = "transparent",colour = NA))
 
 F_survival
+
+#### 8. Female survival through to end of first laying ####
+
+#Create subset with femlaes that have the full data
+subF_survival_FL<-subset(pupaeTFL, F_female_survived_laying1==1 |F_female_survived_laying1==0)
+#subF_survival$F_female_survived_laying3<-as.numeric(subF_survival$F_female_survived_mating)
+
+#Gather useful columns and assing values based on days
+survival_x<- gather(subF_survival_FL, Days, Survival, emerged, survived_to_mating, F_female_survived_mating, F_female_survived_laying1)
+survival_x$Days<-sapply(survival_x$Days,switch,'emerged'=0, 'survived_to_mating'=5,'F_female_survived_mating'=6,'F_female_survived_laying1'=8)
+survival_x$temp<-as.factor(survival_x$temp)
+
+#Work out proportions alive at each time point by temperature
+survival_x$Survival<-as.numeric(survival_x$Survival)
+prop_F_survival_FL <- summarise(group_by(survival_x, temp, Days), mean(Survival),N=length(Survival))
+
+#Normal ggplot of survival over time
+F_survival_FL <-ggplot(prop_F_survival_FL, aes(x=Days, y=`mean(Survival)`, group=temp)) +
+                geom_point(aes(colour=temp)) +
+                geom_line(aes(colour=temp)) +
+                coord_cartesian(ylim=c(0, 1), xlim=c(0,8)) +
+                scale_x_continuous('Days after emergence', breaks= round(seq(min(0), max(8), by = 1),1)) +
+                scale_y_continuous('Proportion of females alive', breaks=round(seq(min(0), max(1), by =0.1),1)) +
+                labs(colour = "Temperature (°C)") +
+                theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                      axis.line=element_line(colour='gray90'),
+                      axis.text=element_text(colour='black'),
+                      panel.grid.major = element_line("gray90"),
+                      axis.title.y = element_text(vjust=1.5),
+                      plot.title = element_text(face="bold"),
+                      plot.background = element_rect(fill = "transparent",colour = NA))
+
+F_survival_FL
+
+png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_female_survival.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+print(F_survival_FL)
+dev.off() 
+
+
+#### 9. Male survival ####
+#Create subset with males that have the full data
+subM_survival<-subset(pupaeTFL, M_male_survived_mating==1 |M_male_survived_mating==0)
+#subM_survival$M_male_survived_mating<-as.numeric(subM_survival$M_male_survived_mating)
+
+#Gather useful columns and assing values based on days
+survival_M<- gather(subM_survival, Days, Survival, emerged, survived_to_mating, M_male_survived_mating)
+survival_M$Days<-sapply(survival_M$Days,switch,'emerged'=0, 'survived_to_mating'=3,'M_male_survived_mating'=4)
+survival_M$temp<-as.factor(survival_M$temp)
+
+#Work out proportions alive at each time point by temperature
+survival_M$Survival<-as.numeric(survival_M$Survival)
+prop_M_survival <- summarise(group_by(survival_M, temp, Days), mean(Survival),N=length(Survival))
+
+#Normal ggplot of survival over time
+M_survival <-ggplot(prop_M_survival, aes(x=Days, y=`mean(Survival)`, group=temp)) +
+             geom_point(aes(colour=temp)) +
+             geom_line(aes(colour=temp)) +
+             coord_cartesian(ylim=c(0, 1), xlim=c(0,8)) +
+             scale_x_continuous('Days after emergence', breaks= round(seq(min(0), max(8), by = 1),1)) +
+             scale_y_continuous('Proportion of males alive', breaks=round(seq(min(0), max(1), by =0.1),1)) +
+             labs(colour = "Temperature (°C)") +
+            theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                  axis.line=element_line(colour='gray90'),
+                  axis.text=element_text(colour='black'),
+                  panel.grid.major = element_line("gray90"),
+                  axis.title.y = element_text(vjust=1.5),
+                  plot.title = element_text(face="bold"),
+                  plot.background = element_rect(fill = "transparent",colour = NA))
+
+M_survival
+
+png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_male_survival.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+print(M_survival)
+dev.off() 
+
+
+#### 10. Pupation length vs fertility ####
+
+prop_M_larval_pupation <- summarise(group_by(subpupaeTFL, temp, pupation), mean(M_larval), N=length(M_larval))
+prop_M_larval_pupation <- prop_M_larval_pupation[-c(11, 12),]
+prop_M_larval_pupation <- cbind((binom.confint(prop_M_larval_pupation$`mean(M_larval)`*prop_M_larval_pupation$N, prop_M_larval_pupation$N, conf.level = 0.95, methods = "logit")),prop_M_larval_pupation)
+
+prop_M_larval_pupation$pupation<-as.factor(prop_M_larval_pupation$pupation)
+
+
+TFL_M_pupation<- ggplot(prop_M_larval_pupation, aes(x=temp, y=`mean(M_larval)`, group=pupation)) + 
+  geom_point(size=1.5, aes(colour=factor(pupation))) +
+  geom_line(aes(colour=factor(pupation)))+
+  #geom_errorbar(colour="black", position=pd, size=0.5, width=.2)+
+  scale_x_continuous('Pupal heat shock temperature (°C)', breaks= round(seq(min(28), max(35), by = 1),1)) +
+  scale_y_continuous('Proportion of surviving males fertile')+
+  scale_color_discrete("Pupation length")+
+  coord_cartesian(ylim=c(0, 1)) +
+  theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+        axis.line=element_line(colour='gray90'),
+        axis.text=element_text(colour='black'),
+        panel.grid.major = element_line("gray90"),
+        axis.title.y = element_text(vjust=1.5),
+        plot.title = element_text(face="bold"),
+        plot.background = element_rect(fill = "transparent",colour = NA))
+
+TFL_M_pupation
 
 
 
@@ -490,14 +606,14 @@ ggplot(submatefemale, aes(x=temp, y=latency_s))+
 
 
 ```
-This document is a summary of the experimental work I have completed as of 23/04/18, including a brief description of the methodology used, plots of the data collected, and future directions in which the work could be taken.
+This document is a summary of the experimental work I have completed as of `r format(Sys.time(), '%d %B %Y')`, including a brief description of the methodology used, plots of the data collected, and future directions in which the work could be taken.
 
 The experiment was designed to examine the Thermal Fertility Limits (TFL) of Drosophila melanogaster, when exposed to a heat shock during the pupal stage.
 
 # 1. Methods
-We subjected *Drosophila melanogaster* pupae to a 48 hour heat-shock at static temperatures ranging from 28?C to 35?C. Individuals that had pupated within 8 hours of each other were transferred to 96 well PCR plates (around 3-4 pupae per well), and subjected to one of 5 temperatures. Plates were covered with standard PCR plate seals, with holes pierced in each well to allow for gaseous exchange. After 48 hours at their respective temperatures, the pupae were transferred to vials according to the PCR column they were treated in, placed back at 25?C and left to emerge.
+We subjected *Drosophila melanogaster* pupae to a 48 hour heat-shock at static temperatures ranging from 28&deg;C to 35&deg;C. Individuals that had pupated within 8 hours of each other were transferred to 96 well PCR plates (around 4-8 pupae per well), and subjected to one of 8 temperatures. For temperatures below 34&deg;C, gradients creating distinct temperatures at specific locations across plates were used (gradient 1: 28,30,32.5&deg;C; gradient 2:29,31,33.5&deg;C).In each of these plates, intermediate temperatures were not used, giving 3 distinct temperatures in each case. For temperatures 34&deg;C and 35&deg;C, full static temperature plates were used in order to maximise sample size due to low survival. Plates were covered with standard PCR plate seals, with holes pierced in each well to allow for gaseous exchange. After 48 hours at their respective temperatures, the pupae were transferred to vials according to the PCR column they were treated in, placed back at 25&deg;C and left to emerge.
 
-Vials were checked 3 times per day, and males and females were separated at emergence and kept at 25?C. Thereafter, the project was split into two distinct experiments.
+Vials were checked 3 times per day, and both males and females were separated at emergence and kept at 25&deg;C. Thereafter, the project was split into two distinct experiments.
 
 ### Male fertility
 Males were kept for 3 days until sexual maturity, and subsequently placed with 2 females for 24 hours to allow males to mate. After this, males were discarded and females given 3 days to lay eggs. After laying, females were discarded and the vials were monitored for the presence of larvae (0/1), and the number of emerging adults in each vial was counted.
@@ -506,20 +622,20 @@ Males were kept for 3 days until sexual maturity, and subsequently placed with 2
 Females were given 5 days to reach sexual maturity, and then given 2 males for 24 hours to allow females an opportunity to mate. After this, males were discaded and females given 3 opportunities to lay, each 48 hours to allow for accurate egg counts. This gave 3 egg counts, larval scores, and adult counts per laying attempt. It should be noted here that female survival was also monitored at each stage of this process, giving 6 survival data points per individual.
 
 # 2. Results
-Emergence of individuals from the treatments is shown below (Fig. 1). There was a relatively high emergence from 28?C to 32.5?C, and after this emergence drops significantly to 0 at 35?C. Due to the difficulty of identifying the sex of an individual at the pupal stage, this data cannot be split into male/ female emergence.
+Emergence of individuals from the treatments is shown below (Fig. 1). There was a relatively high emergence from 28&deg;C to 32.5&deg;C, and after this emergence drops significantly to 0 at 35&deg;C. Due to the difficulty of identifying the sex of an individual at the pupal stage, this data cannot be split into male/ female emergence.
 
 ```{r,echo=FALSE,fig.cap="**Figure 1** The probability of emergence of *D. melanogaster* individuals exposed to a 48 hour heat shock at the pupal stage. Error bars represent 95% confidence intervals."}
 plot(emerged_error)
 ```
 
 ### Male fertility
-Male fertility followed a similar trend to emergence with a relatively steep decline after a high plateau, however this decline occurs at much lower temperatures when examining fertilty as a binary trait. Figure 2 shows the proportion of fertile male *D. melanogaster* individuals over the range of pupal heat-shock temperatures. This indicates that a male's fertility is almost fully compromised at 32.5?C, a temperature with around 75% emergence. 
+Male fertility followed a similar trend to emergence with a relatively steep decline after a high plateau, however this decline occurs at much lower temperatures when examining fertilty as a binary trait. Figure 2 shows the proportion of fertile male *D. melanogaster* individuals over the range of pupal heat-shock temperatures. This indicates that a male's fertility is almost fully compromised at 32.5&deg;C, a temperature with around 75% emergence. 
 
 ```{r,echo=FALSE,fig.cap="**Figure 2** The proportion of fertile male *D. melanogaster* individuals that have been exposed to a 48 hour heat shock at the pupal stage. Error bars represent 95% confidence intervals."}
 plot(TFL_error)
 ```
 
-Figure 3 combines the two above graphs to show this difference in these two traits. There is around a 2?C difference in where these two traits are below 20%. This gap between fertility and mortality is important, and suggests that using mortality limits may underestimate the impact of pupal temperature on individuals in this species.
+Figure 3 combines the two above graphs to show this difference in these two traits. There is around a 2&deg;C difference in where these two traits are below 20%. This gap between fertility and mortality is important, and suggests that using mortality limits may underestimate the impact of pupal temperature on individuals in this species.
 
 ```{r, echo = FALSE, fig.cap="**Figure 3** The proportion of two traits of *D. melanogaster* that have been exposed to a 48 hour heat shock during the pupal stage. The red line represents the proportion of flies that emerge, and the green line represents the fertility of emerging **males**."}
 plot(TFL_emergence_error)
@@ -537,7 +653,7 @@ plot(TFL_emergence_m_f)
 ### Female survival
 Of the flies that have successfully emerged, it appears that the majority of individuals, regardless of treatment, can survive to sexual maturity (which we have allocated as 5 days in *D. melanogaster*). After mating, the females are given 48 hours to lay 3 separate times. This gave us 6 data points for survival per individual, which allowed me to examine survival of females throughout the experiment. Figure 5 shows that immediately after mating and during the first laying period (between days 6 and 8), a significant proportion of females exposed to higher pupal temperatures die, suggesting that there could be an extreme cost of mating when an indvidual is already heat-stressed from an earlier life-history stage.
 
-This would have to be tested with a much more thorough experimental design for the question to be answered effectively. Also, it should be noted that although the sample size for the temperatures 28?C, 30?C, and 32.5?C are 21 each, the sample size for 34?C at this point is only 4 due to the low emergence of individuals at this temperature.
+This would have to be tested with a much more thorough experimental design for the question to be answered effectively. Also, it should be noted that although the sample size for the temperatures 28&deg;C, 30&deg;C, and 32.5&deg;C are 21 each, the sample size for 34?C at this point is only 4 due to the low emergence of individuals at this temperature.
 
 ```{r, echo=FALSE, fig.cap= "**Figure 5** Percentage survival of female *D. melanogaster* individuals that have been exposed to a heat shock at the pupal stage. Females were mated between days 5 and 6."}
 plot(F_survival)
@@ -547,11 +663,11 @@ plot(F_survival)
 
 ### Finishing this experiment
 
-In my opinion, the *D. melanogaster* pupal TFL experiment is close to being wrapped up, with perhaps 1 or 2 more blocks to go if we decide to add more temperatures. Including more temperatures might be a good idea, so we can more precicely predict where emergence and fertility is dropping off. The temperatures we could add would be 29, 31, and 33. This could allow us to see how sharp the fall off in fertility is, and will give us fertility measures for temperatures that exhibit varying levels of stress (i.e. 50% fertility at X?C vs 25% fertility at X?C), which we can use in future experiments (see below).
+In my opinion, the *D. melanogaster* pupal TFL experiment is close to being wrapped up, with perhaps 1 or 2 more blocks to go if we decide to add more temperatures. Including more temperatures might be a good idea, so we can more precicely predict where emergence and fertility is dropping off. The temperatures we could add would be 29, 31, and 33. This could allow us to see how sharp the fall off in fertility is, and will give us fertility measures for temperatures that exhibit varying levels of stress (i.e. 50% fertility at X&deg;C vs 25% fertility at X&deg;C), which we can use in future experiments (see below).
 
 ### Experiment 2: Mating behaviour & sperm motility
 
-I am currently running this, and should have the data by 30/4/18. At this point, we know that pupal heat shocks of temperatures of 32.5?C render around 80% of individuals sterile. What we do not know is where this sterility is coming from. This experiment subjects *D. melanogaster* larvae to two temperatures: 28?C (benign) and 32.5?C (stressful) as above, and I will be assessing:
+I am currently running this, and should have the data by 30/4/18. At this point, we know that pupal heat shocks of temperatures of 32.5&deg;C render around 80% of individuals sterile. What we do not know is where this sterility is coming from. This experiment subjects *D. melanogaster* larvae to two temperatures: 28&deg;C (benign) and 32.5&deg;C (stressful) as above, and I will be assessing:
 
 *i). Behaviour*
 Simply a mating assay: do the flies mate? All of the usual traits will be measured (success, latency, duration).
