@@ -73,7 +73,7 @@ subemerged$emerged<-as.numeric(subemerged$emerged)
 subemerged$emerged<-subemerged$emerged-1
 
 #Create subset with male larval
-subpupaeTFL<- subset(pupaeTFL,M_larval==1 |M_larval==0)
+subpupaeTFL<- subset(pupaeTFL,M_larval==1 |M_larval==0 |M_male_survived_mating ==1)
 subpupaeTFL$M_larval<-as.numeric(subpupaeTFL$M_larval)
 subpupaeTFL$M_larval<-subpupaeTFL$M_larval-1 #changing back to normal values
 
@@ -86,7 +86,7 @@ FsubpupaeTFL$F_larval1<-FsubpupaeTFL$F_larval1-1
 FsubpupaeTFL$F_larval2<-FsubpupaeTFL$F_larval2-1
 FsubpupaeTFL$F_larval3<-FsubpupaeTFL$F_larval3-1
 
-Fsublarval1<-subset(pupaeTFL, F_larval1==1 | F_larval1==0)
+Fsublarval1<-subset(pupaeTFL, F_larval1==1 | F_larval1==0 & F_female_survived_laying1==1)
 Fsublarval1$F_larval1<-as.numeric(Fsublarval1$F_larval1)
 Fsublarval1$F_larval1<-Fsublarval1$F_larval1-1
 
@@ -123,6 +123,11 @@ emerged_error<- ggplot(prop_emerged, aes(x=temp, y=`mean(emerged)`, ymin=lower, 
 
 emerged_error
 
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_emerged_error.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(emerged_error)
+#dev.off() 
+
 #### 2. Male fertility vs emergence error ####
 
 prop_M_larval<-cbind((binom.confint(prop_M_larval$`mean(M_larval)`*prop_M_larval$N, prop_M_larval$N, conf.level = 0.95, methods = "logit")),prop_M_larval)
@@ -152,6 +157,10 @@ TFL_M_emergence_error <- ggplot(prop_emerged_male, aes(x=temp, y=`mean(emerged)`
 
 TFL_M_emergence_error
 
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_TFL_M_emergence_error.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(TFL_M_emergence_error)
+#dev.off() 
 
 #### 3. Male fertility with error bars ####
 
@@ -179,13 +188,18 @@ TFL_M_error<- ggplot(prop_M_larval, aes(x=temp, y=`mean(emerged)`, ymin=lower, y
 
 TFL_M_error
 
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_TFL_M_error.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(TFL_M_error)
+#dev.off() 
+
 #### 4. Female fertility vs emergence error ####
 
-prop_F_larval1<-cbind((binom.confint(prop_F_larval1$`mean(F_larval1)`*prop_F_larval1$N, prop_F_larval1$N, conf.level = 0.95, methods = "logit")),prop_F_larval1)
+prop_F_larval1<-as.data.frame(cbind((binom.confint(prop_F_larval1$`mean(F_larval1)`*prop_F_larval1$N, prop_F_larval1$N, conf.level = 0.95, methods = "logit")),prop_F_larval1))
 
 colnames(prop_F_larval1)[8] <- "mean(emerged)"
 prop_emerged_female <- rbind(prop_emerged,prop_F_larval1)
-prop_emerged_female [,"emerg_or_TFL"]<- c(0,0,0,0,0,0,0,0,1,1,1,1)
+prop_emerged_female [,"emerg_or_TFL"]<- c(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1)
 prop_emerged_female$emerg_or_TFL<-as.factor(prop_emerged_female$emerg_or_TFL)
 
 
@@ -208,7 +222,10 @@ TFL_F_emergence_error <- ggplot(prop_emerged_female, aes(x=temp, y=`mean(emerged
 
 TFL_F_emergence_error
 
-
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_TFL_F_emergence_error.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(TFL_F_emergence_error)
+#dev.off() 
 
 #### 5. Female fertility with error bars ####
 
@@ -232,6 +249,11 @@ TFL_F_error<- ggplot(prop_F_larval1, aes(x=temp, y=`mean(emerged)`, ymin=lower, 
 
 TFL_F_error
 
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_TFL_F_error.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(TFL_F_error)
+#dev.off() 
+
 
 #### 6. Male and female fertility vs emergence ####
 
@@ -239,7 +261,7 @@ prop_F_larval1<-cbind((binom.confint(prop_F_larval1$`mean(F_larval1)`*prop_F_lar
 
 colnames(prop_F_larval1)[8] <- "mean(emerged)"
 prop_emerged_all_male_female <- rbind(prop_emerged, prop_M_larval, prop_F_larval1)
-prop_emerged_all_male_female [,"emerg_male_female"]<- c(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2)
+prop_emerged_all_male_female [,"emerg_male_female"]<- c(0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2,2,2,2)
 prop_emerged_all_male_female$emerg_male_female<-as.factor(prop_emerged_all_male_female$emerg_male_female)
 
 
@@ -263,9 +285,9 @@ TFL_emergence_m_f <- ggplot(prop_emerged_all_male_female, aes(x=temp, y=`mean(em
 TFL_emergence_m_f
 
 #Saving high res plot
-png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_male_female_fertility.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
-print(TFL_emergence_m_f)
-dev.off() 
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_male_female_fertility.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(TFL_emergence_m_f)
+#dev.off() 
 
 
 #### 7. Female survival throughout TFL experiment ####
@@ -334,9 +356,9 @@ F_survival_FL <-ggplot(prop_F_survival_FL, aes(x=Days, y=`mean(Survival)`, group
 
 F_survival_FL
 
-png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_female_survival.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
-print(F_survival_FL)
-dev.off() 
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_female_survival.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(F_survival_FL)
+#dev.off() 
 
 
 #### 9. Male survival ####
@@ -371,24 +393,27 @@ M_survival <-ggplot(prop_M_survival, aes(x=Days, y=`mean(Survival)`, group=temp)
 
 M_survival
 
-png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_male_survival.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
-print(M_survival)
-dev.off() 
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_male_survival.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(M_survival)
+#dev.off() 
 
 
 #### 10. Pupation length vs fertility ####
 
-prop_M_larval_pupation <- summarise(group_by(subpupaeTFL, temp, pupation), mean(M_larval), N=length(M_larval))
-prop_M_larval_pupation <- prop_M_larval_pupation[-c(11, 12),]
-prop_M_larval_pupation <- cbind((binom.confint(prop_M_larval_pupation$`mean(M_larval)`*prop_M_larval_pupation$N, prop_M_larval_pupation$N, conf.level = 0.95, methods = "logit")),prop_M_larval_pupation)
-
+prop_M_larval_pupation <- as.data.frame(summarise(group_by(subpupaeTFL, temp, pupation), mean(M_larval), N=length(M_larval)))
+#prop_M_larval_pupation <- prop_M_larval_pupation[-c(11, 12),]
+prop_M_larval_pupation$number_pupated<-prop_M_larval_pupation$`mean(M_larval)`*prop_M_larval_pupation$N
 prop_M_larval_pupation$pupation<-as.factor(prop_M_larval_pupation$pupation)
+prop_M_larval_pupation <- cbind(prop_M_larval_pupation,binom.confint(prop_M_larval_pupation$number_pupated, prop_M_larval_pupation$N, conf.level = 0.95, methods = "logit"))
 
 
-TFL_M_pupation<- ggplot(prop_M_larval_pupation, aes(x=temp, y=`mean(M_larval)`, group=pupation)) + 
+
+
+
+TFL_M_pupation<- ggplot(prop_M_larval_pupation, aes(x=temp, y=`mean(M_larval)`, group=pupation, ymax=upper, ymin=lower)) + 
   geom_point(size=1.5, aes(colour=factor(pupation))) +
   geom_line(aes(colour=factor(pupation)))+
-  #geom_errorbar(colour="black", position=pd, size=0.5, width=.2)+
+  geom_errorbar(aes(colour=factor(pupation)), size=0.5, width=.2)+
   scale_x_continuous('Pupal heat shock temperature (°C)', breaks= round(seq(min(28), max(35), by = 1),1)) +
   scale_y_continuous('Proportion of surviving males fertile')+
   scale_color_discrete("Pupation length")+
@@ -403,7 +428,161 @@ TFL_M_pupation<- ggplot(prop_M_larval_pupation, aes(x=temp, y=`mean(M_larval)`, 
 
 TFL_M_pupation
 
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_TFL_M_pupation.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(TFL_M_pupation)
+#dev.off() 
 
+
+
+
+
+#### 11. Male offspring numbers ####
+
+sub_M_adults<- subset(pupaeTFL, M_adults !='NA')
+
+male_offspring <- ggplot(sub_M_adults, aes(x=temp, y=M_adults, group=factor(temp)))+
+                  geom_point(position = position_jitter(w = 0.1, h = 0))+
+                  geom_boxplot(outlier.colour=NA, alpha=.5, width=.5) +
+                  scale_x_continuous("Pupal heat shock temperature (°C)",breaks = round(seq(min(28), max(35), by = 1),1))+
+                  scale_y_continuous("Number of adult offspring produced by males")+
+                  theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                        axis.line=element_line(colour='gray90'),
+                        axis.text=element_text(colour='black'),
+                        panel.grid.major = element_line("gray90"),
+                        axis.title.y = element_text(vjust=1.5),
+                        plot.title = element_text(face="bold"),
+                        plot.background = element_rect(fill = "transparent",colour = NA))
+
+male_offspring
+
+#### 12. Female offspring numbers laying 1 ####
+
+sub_F_adults<- subset(pupaeTFL, F_adults1 !='NA')
+
+female_offspring <- ggplot(sub_F_adults, aes(x=temp, y=F_adults1, group=factor(temp)))+
+                    geom_point(position = position_jitter(w = 0.1, h = 0))+
+                    geom_boxplot(outlier.colour=NA, alpha=.5, width=.5) +
+                    scale_x_continuous("Pupal heat shock temperature (°C)",breaks = round(seq(min(28), max(35), by = 1),1))+
+                    scale_y_continuous("Number of adult offspring produced by females")+
+                    theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                          axis.line=element_line(colour='gray90'),
+                          axis.text=element_text(colour='black'),
+                          panel.grid.major = element_line("gray90"),
+                          axis.title.y = element_text(vjust=1.5),
+                          plot.title = element_text(face="bold"),
+                          plot.background = element_rect(fill = "transparent",colour = NA))
+
+female_offspring
+
+#### 13. Male vs female offspring numbers (per laying female) ####
+
+sub_all_adults<- subset(pupaeTFL, F_adults1!='NA' | M_adults!='NA')
+sub_all_adults$M_adults<-as.numeric(sub_all_adults$M_adults)
+sub_all_adults$M_female_survived_laying<-as.numeric(sub_all_adults$M_female_survived_laying)
+sub_all_adults[,"Offspring_per_female"]<-sub_all_adults$M_adults/sub_all_adults$M_female_survived_laying
+
+
+#Create a new column that includes both male (/2) and female (as is) adult numbers
+sub_all_adults<- sub_all_adults %>% 
+  replace_na(list(Offspring_per_female = "", F_adults1 = "")) %>% 
+  unite(all_adults, Offspring_per_female, F_adults1, sep = "")
+
+
+#Plot
+
+
+sub_all_adults$temp<-as.factor(sub_all_adults$temp)
+#sub_all_adults$temp<-as.numeric(sub_all_adults$temp)
+sub_all_adults$all_adults<-as.numeric(sub_all_adults$all_adults)
+
+sub_all_adults$sex <- factor(sub_all_adults$sex,levels = c(0,1),
+labels = c("Female", "Male"))
+
+all_offspring <- ggplot(sub_all_adults, aes(x=temp, y=all_adults))+
+                    geom_point(position = position_jitterdodge(jitter.width = .2), aes(colour=sex))+
+                    geom_boxplot(outlier.colour=NA, alpha=.5, width=.5, aes(fill=sex), show.legend = FALSE) +
+                    scale_x_discrete('Pupal heat-shock temperature (°C)') +
+                    scale_y_continuous('Offspring number per laying female')+
+                     guides(color=guide_legend("Sex"))+
+                    theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                          axis.line=element_line(colour='gray90'),
+                          axis.text=element_text(colour='black'),
+                          panel.grid.major = element_line("gray90"),
+                          axis.title.y = element_text(vjust=1.5),
+                          plot.title = element_text(face="bold"),
+                          plot.background = element_rect(fill = "transparent",colour = NA))
+
+all_offspring
+
+#### 14. Male vs female numbers with 0s removed ####
+sub_all_adults_no_zero<- subset(pupaeTFL, F_adults1>0 | M_adults>0)
+sub_all_adults_no_zero$M_adults<-as.numeric(sub_all_adults_no_zero$M_adults)
+sub_all_adults_no_zero$M_female_survived_laying<-as.numeric(sub_all_adults_no_zero$M_female_survived_laying)
+sub_all_adults_no_zero[,"Offspring_per_female"]<-sub_all_adults_no_zero$M_adults/sub_all_adults_no_zero$M_female_survived_laying
+
+
+#Create a new column that includes both male (/2) and female (as is) adult numbers
+sub_all_adults_no_zero<- sub_all_adults_no_zero %>% 
+  replace_na(list(Offspring_per_female = "", F_adults1 = "")) %>% 
+  unite(all_adults, Offspring_per_female, F_adults1, sep = "")
+
+
+#Plot
+
+
+sub_all_adults_no_zero$temp<-as.factor(sub_all_adults_no_zero$temp)
+#sub_all_adults_no_zero$temp<-as.numeric(sub_all_adults_no_zero$temp)
+sub_all_adults_no_zero$all_adults<-as.numeric(sub_all_adults_no_zero$all_adults)
+
+sub_all_adults_no_zero$sex <- factor(sub_all_adults_no_zero$sex,levels = c(0,1),
+labels = c("Female", "Male"))
+
+all_offspring_no_zero <- ggplot(sub_all_adults_no_zero, aes(x=temp, y=all_adults))+
+                    geom_point(position = position_jitterdodge(jitter.width = .2), aes(colour=sex))+
+                    geom_boxplot(outlier.colour=NA, alpha=.5, width=.5, aes(fill=sex), show.legend = FALSE) +
+                    scale_x_discrete('Pupal heat-shock temperature (°C)') +
+                    scale_y_continuous('Offspring number per laying female')+
+                     guides(color=guide_legend("Sex"))+
+                    theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                          axis.line=element_line(colour='gray90'),
+                          axis.text=element_text(colour='black'),
+                          panel.grid.major = element_line("gray90"),
+                          axis.title.y = element_text(vjust=1.5),
+                          plot.title = element_text(face="bold"),
+                          plot.background = element_rect(fill = "transparent",colour = NA))
+
+all_offspring_no_zero
+
+
+#Saving high res plot
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-mel_all_offspring.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(all_offspring)
+#dev.off() 
+
+
+#### 15. Male and female offspring temp as numeric ####
+sub_all_adults$temp<-as.character(sub_all_adults$temp)
+sub_all_adults$temp<-as.numeric(sub_all_adults$temp)
+
+all_offspring_temp_numeric <- ggplot(sub_all_adults, aes(x=temp, y=all_adults, group=sex))+
+                          stat_summary(fun.data= mean_se, geom="pointrange", aes(colour=sex))+
+                          stat_summary(fun.y = mean, geom="line", aes(colour=sex))+
+                          scale_x_continuous('Pupal heat shock temperature (°C)') +
+                          scale_y_continuous('Offspring number per laying female') +
+                          scale_color_discrete("Sex") +
+                          theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                                axis.line=element_line(colour='gray90'),
+                                axis.text=element_text(colour='black'),
+                                panel.grid.major = element_line("gray90"),
+                                axis.title.y = element_text(vjust=1.5),
+                                plot.title = element_text(face="bold"),
+                                plot.background = element_rect(fill = "transparent",colour = NA))
+all_offspring_temp_numeric
+
+#png(filename="C:/Users/bwalsh/Documents/R docs/D-melall_offspring_temp_numeric.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(all_offspring_temp_numeric)
+#dev.off() 
 
 # EXPERIMENT 2: BEHAV. & MOTILITY ####
 
@@ -431,9 +610,22 @@ prop_male_mating<-cbind((binom.confint(prop_male_mating$`mean(mating_success)`*p
 prop_female_mating <- summarise(group_by(submatefemale, temp), mean(mating_success), N=length(mating_success))
 prop_female_mating<-cbind((binom.confint(prop_female_mating$`mean(mating_success)`*prop_female_mating$N, prop_female_mating$N, conf.level = 0.95, methods = "logit")),prop_female_mating)
 
+#Calculate proportions of 3 day motility with error
+
+prop_motile_3 <- summarise(group_by(submotility_3, temp), mean(motility_3), N=length(motility_3))
+prop_motile_3 <-cbind((binom.confint(prop_motile_3$`mean(motility_3)`*prop_motile_3$N, prop_motile_3$N, conf.level = 0.95, methods = "logit")),prop_motile_3)
+
+
+prop_motile_8 <- summarise(group_by(submotility_8, temp), mean(motility_8), N=length(motility_8))
+prop_motile_8 <-cbind((binom.confint(prop_motile_8$`mean(motility_8)`*prop_motile_8$N, prop_motile_8$N, conf.level = 0.95, methods = "logit")),prop_motile_8)
+
+prop_motile_14 <- summarise(group_by(submotility_14, temp), mean(motility_14), N=length(motility_14))
+prop_motile_14 <-cbind((binom.confint(prop_motile_14$`mean(motility_14)`*prop_motile_14$N, prop_motile_14$N, conf.level = 0.95, methods = "logit")),prop_motile_14)
+
+
 
 # PLOTS ####
-#### Male mating with error ####
+#### 1. Male mating with error ####
 pd<-position_dodge(1)
 
 male_mating_error<- ggplot(prop_male_mating, aes(x=temp, y=`mean(mating_success)`, ymin=lower, ymax=upper)) + 
@@ -454,13 +646,13 @@ male_mating_error<- ggplot(prop_male_mating, aes(x=temp, y=`mean(mating_success)
 male_mating_error
 
 #Saving high res plot
-png(filename="C:/Users/bwalsh/Documents/R docs/D.mel male mating.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
-print(male_mating_error)
-dev.off() 
+#png(filename="C:/Users/bwalsh/Documents/R docs/D.mel male mating.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(male_mating_error)
+#dev.off() 
 
 
 
-#### Female mating with error ####
+#### 2. Female mating with error ####
 pd<-position_dodge(1)
 
 female_mating_error<- ggplot(prop_female_mating, aes(x=temp, y=`mean(mating_success)`, ymin=lower, ymax=upper)) + 
@@ -481,27 +673,13 @@ female_mating_error<- ggplot(prop_female_mating, aes(x=temp, y=`mean(mating_succ
 female_mating_error
 
 #Saving high res plot
-png(filename="C:/Users/bwalsh/Documents/R docs/D.mel female mating.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
-print(female_mating_error)
-dev.off() 
+#png(filename="C:/Users/bwalsh/Documents/R docs/D.mel female mating.png", type="cairo", units="in", width=8, height=6, pointsize=10, res=1000)
+#print(female_mating_error)
+#dev.off() 
 
 
+#### 3. 3 day motility with error ####
 
-#Calculate proportions of 3 day motility with error
-
-prop_motile_3 <- summarise(group_by(submotility_3, temp), mean(motility_3), N=length(motility_3))
-prop_motile_3 <-cbind((binom.confint(prop_motile_3$`mean(motility_3)`*prop_motile_3$N, prop_motile_3$N, conf.level = 0.95, methods = "logit")),prop_motile_3)
-
-
-prop_motile_8 <- summarise(group_by(submotility_8, temp), mean(motility_8), N=length(motility_8))
-prop_motile_8 <-cbind((binom.confint(prop_motile_8$`mean(motility_8)`*prop_motile_8$N, prop_motile_8$N, conf.level = 0.95, methods = "logit")),prop_motile_8)
-
-prop_motile_14 <- summarise(group_by(submotility_14, temp), mean(motility_14), N=length(motility_14))
-prop_motile_14 <-cbind((binom.confint(prop_motile_14$`mean(motility_14)`*prop_motile_14$N, prop_motile_14$N, conf.level = 0.95, methods = "logit")),prop_motile_14)
-
-
-
-#Plot motility_3 with error
 pd<-position_dodge(1)
 
 motility_3_error<- ggplot(prop_motile_3, aes(x=temp, y=`mean(motility_3)`, ymin=lower, ymax=upper)) + 
@@ -519,9 +697,9 @@ motility_3_error<- ggplot(prop_motile_3, aes(x=temp, y=`mean(motility_3)`, ymin=
         plot.background = element_rect(fill = "transparent",colour = NA),
         legend.position='none')
 
-motility_3_error
+#motility_3_error
 
-#Plot motility 8 with error
+#### 4. 8 day motility with error ####
 
 motility_8_error<- ggplot(prop_motile_8, aes(x=temp, y=`mean(motility_8)`, ymin=lower, ymax=upper)) + 
   geom_point(position=pd, size=1.5, colour="black") +
@@ -538,9 +716,9 @@ motility_8_error<- ggplot(prop_motile_8, aes(x=temp, y=`mean(motility_8)`, ymin=
         plot.background = element_rect(fill = "transparent",colour = NA),
         legend.position='none')
 
-motility_8_error
+#motility_8_error
 
-
+#### 5. All motility with error ####
 colnames(prop_motile_8)[8] <- "mean(motility_3)"
 colnames(prop_motile_14)[8] <- "mean(motility_3)"
 prop_motile_all <- rbind(prop_motile_3,prop_motile_8,prop_motile_14)
@@ -570,7 +748,8 @@ motility_all_error
 
 
 
-#### MOTILITY OF TFL STUDY BLOCK 5 IN pupaeTFL dataset
+#### 6. Motility of block 5 IN pupaeTFL dataset ####
+#These flies have mated, then 24 hours to recover, then tested for motility
 
 submot_TFL<- subset(pupaeTFL,M_motility==1 |M_motility==0)
 
@@ -596,12 +775,76 @@ motility_TFL_error<- ggplot(prop_mot_TFL, aes(x=temp, y=`mean(M_motility)`, ymin
 
 motility_TFL_error
 
+#### 7. Female mating latency temp as a numeric ####
+
+submatefemale$temp<- as.numeric(submatefemale$temp)
+mating_latency_F<- ggplot(submatefemale, aes(x=temp, y=latency_s))+
+                          stat_summary(fun.data= mean_se, geom="pointrange")+
+                          scale_x_continuous('Pupal heat shock temperature (°C)') +
+                          scale_y_continuous('Female mating latency (s)') +
+                          theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                                axis.line=element_line(colour='gray90'),
+                                axis.text=element_text(colour='black'),
+                                panel.grid.major = element_line("gray90"),
+                                axis.title.y = element_text(vjust=1.5),
+                                plot.title = element_text(face="bold"),
+                                plot.background = element_rect(fill = "transparent",colour = NA),
+                                legend.position='none')
+mating_latency_F
+
+#### 8. Female mating latency temp as a factor ####
 
 
-ggplot(submatefemale, aes(x=temp, y=latency_s))+
-  stat_summary(fun.ymin = function(y) mean(y) - sd(y), 
-           fun.ymax = function(y) mean(y) + sd(y), position ='dodge', 
-           geom = 'errorbar')
+
+submatefemale$temp<-as.factor(submatefemale$temp)
+#sub_all_adults$temp<-as.numeric(sub_all_adults$temp)
+submatefemale$latency_s<-as.numeric(submatefemale$latency_s)
+
+#sub_all_adults$sex <- factor(sub_all_adults$sex,levels = c(0,1),
+#labels = c("Female", "Male"))
+
+mating_latency_F_factor <- ggplot(submatefemale, aes(x=temp, y=latency_s))+
+                          geom_point(position = position_jitter(w=.1))+
+                          geom_boxplot(outlier.colour=NA, alpha=.5, width=.2, aes(fill=sex), show.legend = FALSE) +
+                          scale_x_discrete('Pupal heat-shock temperature of females (°C)') +
+                          scale_y_continuous('Mating latency (s)', breaks= round(seq(min(0), max(9000), by = 1000),1))+
+                          #guides(color=guide_legend("Sex"))+
+                          theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                                axis.line=element_line(colour='gray90'),
+                                axis.text=element_text(colour='black'),
+                                panel.grid.major = element_line("gray90"),
+                                axis.title.y = element_text(vjust=1.5),
+                                plot.title = element_text(face="bold"),
+                                plot.background = element_rect(fill = "transparent",colour = NA))
+  
+mating_latency_F_factor
+
+
+#### 9. Female mating duration temp as a factor ####
+
+submatefemale$temp<-as.factor(submatefemale$temp)
+#sub_all_adults$temp<-as.numeric(sub_all_adults$temp)
+submatefemale$duration_s<-as.numeric(submatefemale$duration_s)
+
+#sub_all_adults$sex <- factor(sub_all_adults$sex,levels = c(0,1),
+#labels = c("Female", "Male"))
+
+mating_duration_F_factor <- ggplot(submatefemale, aes(x=temp, y=duration_s))+
+                          geom_point(position = position_jitter(w=.1))+
+                          geom_boxplot(outlier.colour=NA, alpha=.5, width=.2, aes(fill=sex), show.legend = FALSE) +
+                          scale_x_discrete('Pupal heat-shock temperature of females (°C)') +
+                          scale_y_continuous('Mating duration (s)', breaks= round(seq(min(0), max(2000), by = 200),1))+
+                          #guides(color=guide_legend("Sex"))+
+                          theme(panel.background = element_rect(fill = "white",colour = "gray90"),
+                                axis.line=element_line(colour='gray90'),
+                                axis.text=element_text(colour='black'),
+                                panel.grid.major = element_line("gray90"),
+                                axis.title.y = element_text(vjust=1.5),
+                                plot.title = element_text(face="bold"),
+                                plot.background = element_rect(fill = "transparent",colour = NA))
+  
+mating_duration_F_factor
+
 
 
 
